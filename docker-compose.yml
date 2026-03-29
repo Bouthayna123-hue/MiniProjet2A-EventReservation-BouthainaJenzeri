@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # PHP Application
   php:
     build:
       context: .
@@ -18,7 +17,6 @@ services:
     networks:
       - event_network
 
-  # Nginx Web Server
   nginx:
     image: nginx:alpine
     container_name: event_nginx
@@ -32,12 +30,11 @@ services:
     networks:
       - event_network
 
-  # PostgreSQL Database
   database:
     image: postgres:16-alpine
     container_name: event_database
     environment:
-      - POSTGRES_DB=event_db
+      - POSTGRES_DB=app
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
@@ -47,7 +44,6 @@ services:
     networks:
       - event_network
 
-  # Mailpit (Email testing)
   mailer:
     image: axllent/mailpit
     container_name: event_mailer
