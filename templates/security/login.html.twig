@@ -223,6 +223,19 @@
         </div>
 
         <div class="login-main">
+            {# ✅ Display flash messages #}
+            {% for message in app.flashes('success') %}
+                <div class="alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            
+            {% for message in app.flashes('error') %}
+                <div class="alert-danger" style="margin-bottom: 1rem;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
             <h1 class="login-heading">Welcome back</h1>
             <p class="login-sub">Sign in to your account to continue.</p>
 

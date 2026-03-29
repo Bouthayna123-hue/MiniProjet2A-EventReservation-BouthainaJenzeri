@@ -206,7 +206,6 @@
 <div class="register-wrap">
     <div class="register-card">
 
-        {# ── Left decorative panel ── #}
         <div class="register-side">
             <div>
                 <div class="register-logo">EventReserve</div>
@@ -220,8 +219,13 @@
             </div>
         </div>
 
-        {# ── Form panel ── #}
         <div class="register-main">
+            {# ✅ Display flash messages #}
+            {% for message in app.flashes('success') %}
+                <div class="alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
 
             {% for flash_error in app.flashes('verify_email_error') %}
                 <div class="alert-danger">{{ flash_error }}</div>
