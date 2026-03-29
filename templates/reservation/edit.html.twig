@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+{% block title %}Edit Reservation{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark:   #0f1f15;
+            --green-mid:    #1a3122;
+            --green-accent: #4caf73;
+            --green-border: #2d5240;
+            --green-text:   #a8dbb8;
+        }
+        .page-wrap { min-height:100vh; background:#f5f4f0; padding:2rem; font-family:'DM Sans',sans-serif; }
+        .page-inner { max-width:700px; margin:0 auto; }
+        .card { background:#fff; border-radius:14px; padding:2rem; box-shadow:0 2px 12px rgba(0,0,0,.05); border:1px solid #ebebe7; }
+        .card-title { font-family:'Lora',serif; font-size:22px; color:#111; margin-bottom:4px; }
+        .card-sub { font-size:13px; color:#888; margin-bottom:1.75rem; }
+        .card-title-bar { width:24px; height:2px; background:var(--green-accent); margin:6px 0 1.5rem; }
+        .admin-badge { background:var(--green-mid); color:var(--green-text); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:500; }
+        .card-top { display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:1rem; margin-bottom:1.5rem; }
+
+        .form-group { margin-bottom:1.1rem; }
+        .form-group label { display:block; font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#888; margin-bottom:6px; }
+        .form-group input { width:100%; box-sizing:border-box; border:1px solid #e0e0dc; border-radius:8px; padding:9px 12px; font-size:14px; font-family:'DM Sans',sans-serif; background:#fafaf8; color:#111; outline:none; transition:border-color .15s,box-shadow .15s; }
+        .form-group input:focus { border-color:var(--green-accent); box-shadow:0 0 0 3px rgba(76,175,115,.12); }
+
+        .event-info { background:#f0f8f3; border:0.5px solid #b2ddc0; border-radius:10px; padding:.875rem 1rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:10px; }
+        .event-info-label { font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#5a8a6a; margin-bottom:3px; }
+        .event-info-title { font-size:14px; font-weight:500; color:#0f6e56; }
+
+        .btn { border-radius:8px; padding:9px 18px; font-size:13px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; transition:background .15s,color .15s,border-color .15s; text-decoration:none; display:inline-block; border:1px solid transparent; }
+        .btn-update { background:var(--green-accent); color:var(--green-dark); border-color:var(--green-accent); }
+        .btn-update:hover { background:var(--green-mid); color:var(--green-text); border-color:var(--green-border); }
+        .btn-delete { background:#fff0f0; color:#c0392b; border-color:#f5c6c6; }
+        .btn-delete:hover { background:#fde8e8; }
+        .btn-back { font-size:12.5px; color:#aaa; text-decoration:none; }
+        .btn-back:hover { color:var(--green-accent); }
+
+        .flash-success { background:#f0f8f3; border:1px solid #b2ddc0; color:#1a6636; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:1.25rem; }
+        .flash-error { background:#fff0f0; border:1px solid #f5c6c6; color:#a33; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:1.25rem; }
+        .btn-submit {
+    width: 100%;
+    padding: 10px;
+    background: var(--green-accent);
+    color: var(--green-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid var(--green-accent);
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: .02em;
+    transition: background .15s, color .15s;
+    margin-top: .5rem;
+}
+.btn-submit:hover {
+    background: var(--green-mid);
+    color: var(--green-text);
+    border-color: var(--green-border);
+}
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="page-inner">
+
+        {% for msg in app.flashes('success') %}
+            <div class="flash-success">{{ msg }}</div>
+        {% endfor %}
+        {% for msg in app.flashes('error') %}
+            <div class="flash-error">{{ msg }}</div>
+        {% endfor %}
+
+        <div class="card">
+            <div class="card-top">
+                <div>
+                    <div class="card-title">Edit reservation</div>
+                    <div class="card-title-bar"></div>
+                    <div class="card-sub">Update the details for this reservation.</div>
+                </div>
+                <span class="admin-badge">Admin mode</span>
+            </div>
+
+            {# Event info box #}
+            {% if reservation.event %}
+                <div class="event-info">
+                    <div>
+                        <div class="event-info-label">Event</div>
+                        <div class="event-info-title">{{ reservation.event.title }}</div>
+                    </div>
+                </div>
+            {% endif %}
+
+{{ include('reservation/_form.html.twig', {'button_label': 'Update reservation →'}) }}
+            <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-top:1rem">
+                <form method="post"
+                      action="{{ path('app_reservation_delete', {'id': reservation.id}) }}"
+                      onsubmit="return confirm('Delete this reservation?')"
+                      style="display:inline-block">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+
+                <a href="{{ path('app_reservation_index') }}" class="btn-back">← Back to reservations</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

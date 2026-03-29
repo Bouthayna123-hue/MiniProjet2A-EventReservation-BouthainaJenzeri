@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create Event{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --green-dark:   #0f1f15;
+            --green-mid:    #1a3122;
+            --green-accent: #4caf73;
+            --green-border: #2d5240;
+            --green-text:   #a8dbb8;
+        }
+
+        .page-wrap {
+            min-height: 100vh;
+            background: #f5f4f0;
+            padding: 2rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .page-inner {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border: 1px solid #ebebe7;
+        }
+
+        .title {
+            font-family: 'Lora', serif;
+            font-size: 22px;
+            margin-bottom: 1.5rem;
+            color: #111;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-size: 13px;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--green-accent);
+            outline: none;
+        }
+
+        .btn {
+            background: var(--green-mid);
+            color: var(--green-text);
+            border: 1px solid var(--green-border);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .btn:hover {
+            background: var(--green-accent);
+            color: var(--green-dark);
+            border-color: var(--green-accent);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #4caf73;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="page-inner">
+
+        <div class="card">
+            <div class="title">Create New Event</div>
+
+            {{ include('event_crud/_form.html.twig') }}
+
+            <a class="back-link" href="{{ path('app_admin_dashboard') }}">
+                ← Back to dashboard
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

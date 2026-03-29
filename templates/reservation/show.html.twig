@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+{% block title %}Reservation #{{ reservation.id }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark:   #0f1f15;
+            --green-mid:    #1a3122;
+            --green-accent: #4caf73;
+            --green-border: #2d5240;
+            --green-text:   #a8dbb8;
+        }
+        .page-wrap { min-height:100vh; background:#f5f4f0; padding:2rem; font-family:'DM Sans',sans-serif; }
+        .page-inner { max-width:680px; margin:0 auto; }
+
+        .card { background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.05); border:1px solid #ebebe7; }
+
+        .card-header { background:var(--green-dark); padding:1.25rem 1.75rem; display:flex; align-items:center; justify-content:space-between; }
+        .card-header-title { font-family:'Lora',serif; font-size:18px; color:#e0f0e5; }
+        .card-header-bar { width:20px; height:2px; background:var(--green-accent); margin-top:5px; }
+        .admin-badge { background:var(--green-mid); color:var(--green-text); padding:4px 12px; border-radius:20px; font-size:12px; font-weight:500; border:0.5px solid var(--green-border); }
+
+        .card-body { padding:1.5rem 1.75rem; }
+
+        .event-info { background:#f0f8f3; border:0.5px solid #b2ddc0; border-radius:10px; padding:.875rem 1rem; margin-bottom:1.5rem; }
+        .event-info-label { font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#5a8a6a; margin-bottom:3px; }
+        .event-info-title { font-size:15px; font-weight:500; color:#0f6e56; font-family:'Lora',serif; }
+        .event-info-meta { font-size:12px; color:#5a8a6a; margin-top:4px; }
+
+        .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+        .detail-item { background:#fafaf8; border-radius:10px; padding:.875rem 1rem; border:0.5px solid #ebebeb; }
+        .detail-label { font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#aaa; margin-bottom:4px; }
+        .detail-value { font-size:14px; color:#111; font-weight:500; }
+
+        .detail-full { background:#fafaf8; border-radius:10px; padding:.875rem 1rem; border:0.5px solid #ebebeb; margin-bottom:1rem; }
+
+        .btn { border-radius:8px; padding:8px 16px; font-size:13px; font-family:'DM Sans',sans-serif; font-weight:500; cursor:pointer; transition:background .15s,color .15s; text-decoration:none; display:inline-block; border:1px solid transparent; }
+        .btn-edit { background:var(--green-mid); color:var(--green-text); border-color:var(--green-border); }
+        .btn-edit:hover { background:var(--green-accent); color:var(--green-dark); border-color:var(--green-accent); }
+        .btn-delete { background:#fff0f0; color:#c0392b; border-color:#f5c6c6; }
+        .btn-delete:hover { background:#fde8e8; }
+        .btn-back { font-size:12.5px; color:#aaa; text-decoration:none; margin-left:auto; }
+        .btn-back:hover { color:var(--green-accent); }
+
+        .card-footer { padding:1rem 1.75rem; border-top:1px solid #f0f0ec; display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+
+        @media(max-width:500px) { .detail-grid { grid-template-columns:1fr; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="page-inner">
+        <div class="card">
+
+            <div class="card-header">
+                <div>
+                    <div class="card-header-title">Reservation #{{ reservation.id }}</div>
+                    <div class="card-header-bar"></div>
+                </div>
+                <span class="admin-badge">Admin mode</span>
+            </div>
+
+            <div class="card-body">
+
+                {# Event info #}
+                {% if reservation.event %}
+                    <div class="event-info">
+                        <div class="event-info-label">Event</div>
+                        <div class="event-info-title">{{ reservation.event.title }}</div>
+                        <div class="event-info-meta">
+                            {% if reservation.event.date %}
+                                {{ reservation.event.date|date('d M Y') }}
+                            {% endif %}
+                            {% if reservation.event.location %}
+                                &nbsp;·&nbsp; {{ reservation.event.location }}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Detail grid #}
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Name</div>
+                        <div class="detail-value">{{ reservation.name }}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Phone</div>
+                        <div class="detail-value">{{ reservation.phone }}</div>
+                    </div>
+                </div>
+
+                <div class="detail-full">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">{{ reservation.email }}</div>
+                </div>
+
+                <div class="detail-full">
+                    <div class="detail-label">Reserved on</div>
+                    <div class="detail-value">
+                        {{ reservation.createdAt ? reservation.createdAt|date('d M Y, H:i') : '—' }}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <a href="{{ path('app_reservation_edit', {'id': reservation.id}) }}" class="btn btn-edit">Edit →</a>
+
+                <form method="post"
+                      action="{{ path('app_reservation_delete', {'id': reservation.id}) }}"
+                      onsubmit="return confirm('Delete this reservation?')"
+                      style="display:inline-block">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+                    <button type="submit" class="btn btn-delete">Delete</button>
+                </form>
+
+                <a href="{{ path('app_reservation_index') }}" class="btn-back">← Back to reservations</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+{% block title %}My Account{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --gd:#0f1f15; --gm:#1a3122; --ga:#4caf73; --gb:#2d5240; --gt:#a8dbb8; }
+        .page-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; background:#f5f4f0; padding:2rem; font-family:'DM Sans',sans-serif; }
+        .acc-card { display:flex; width:100%; max-width:680px; border-radius:16px; overflow:hidden; box-shadow:0 8px 40px rgba(0,0,0,.10); }
+        .acc-side { width:220px; flex-shrink:0; background:var(--gd); padding:2.5rem 1.75rem; display:flex; flex-direction:column; justify-content:space-between; }
+        .acc-logo { font-family:'Lora',serif; font-size:20px; color:#e0f0e5; }
+        .acc-bar { width:20px; height:2px; background:var(--ga); margin-top:8px; }
+        .acc-tagline { font-size:12px; color:#5a8a6a; line-height:1.6; }
+        .acc-back { font-size:12px; color:var(--ga); text-decoration:none; font-weight:500; }
+        .acc-main { flex:1; background:#fff; padding:2.5rem 2rem; }
+        .acc-heading { font-family:'Lora',serif; font-size:22px; color:#111; margin:0 0 4px; }
+        .acc-sub { font-size:13px; color:#888; margin:0 0 1.75rem; }
+        .flash-success { background:#f0f8f3; border:1px solid #b2ddc0; color:#1a6636; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:1.25rem; }
+        .form-group { margin-bottom:1.1rem; }
+        .form-group label { display:block; font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#888; margin-bottom:6px; }
+        .form-group input { width:100%; box-sizing:border-box; border:1px solid #e0e0dc; border-radius:8px; padding:9px 12px; font-size:14px; font-family:'DM Sans',sans-serif; background:#fafaf8; color:#111; outline:none; transition:border-color .15s,box-shadow .15s; }
+        .form-group input:focus { border-color:var(--ga); box-shadow:0 0 0 3px rgba(76,175,115,.12); }
+        .btn-save { width:100%; padding:10px; background:var(--gm); color:var(--gt); font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; border:1px solid var(--gb); border-radius:8px; cursor:pointer; transition:background .15s,color .15s; margin-top:.5rem; }
+        .btn-save:hover { background:var(--ga); color:var(--gd); border-color:var(--ga); }
+        @media(max-width:560px){ .acc-side{ display:none; } }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="acc-card">
+        <div class="acc-side">
+            <div>
+                <div class="acc-logo">YourApp</div>
+                <div class="acc-bar"></div>
+            </div>
+            <p class="acc-tagline">Update your email or change your password here.</p>
+            <a href="{{ path('app_user_dashboard') }}" class="acc-back">← Back to dashboard</a>
+        </div>
+        <div class="acc-main">
+            <h1 class="acc-heading">My account</h1>
+            <p class="acc-sub">{{ app.user.userIdentifier }}</p>
+
+            {% for msg in app.flashes('success') %}
+                <div class="flash-success">{{ msg }}</div>
+            {% endfor %}
+
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                    {{ form_errors(form.email) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.plainPassword.first) }}
+                    {{ form_widget(form.plainPassword.first, {attr: {placeholder: 'Leave blank to keep current'}}) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.plainPassword.second) }}
+                    {{ form_widget(form.plainPassword.second, {attr: {placeholder: 'Repeat new password'}}) }}
+                    {{ form_errors(form.plainPassword) }}
+                </div>
+                <button type="submit" class="btn-save">Save changes →</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

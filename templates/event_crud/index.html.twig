@@ -1,0 +1,299 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --green-dark:   #0f1f15;
+            --green-mid:    #1a3122;
+            --green-accent: #4caf73;
+            --green-border: #2d5240;
+            --green-text:   #a8dbb8;
+        }
+
+        .page-wrap {
+            min-height: 100vh;
+            background: #f5f4f0;
+            padding: 2rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .page-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border: 1px solid #ebebe7;
+        }
+
+        .title {
+            font-family: 'Lora', serif;
+            font-size: 22px;
+            margin-bottom: 1.5rem;
+            color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .event-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            transition: transform 0.2s;
+            background: white;
+            position: relative;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .event-title {
+            font-family: 'Lora', serif;
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+
+        .event-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-description {
+            font-size: 13px;
+            color: #777;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .event-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sm {
+            background: var(--green-mid);
+            color: var(--green-text);
+            border: 1px solid var(--green-border);
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: .15s;
+            font-weight: 500;
+        }
+
+        .btn-sm:hover {
+            background: var(--green-accent);
+            color: var(--green-dark);
+            border-color: var(--green-accent);
+        }
+
+        .btn-reserve {
+            background: var(--green-accent);
+            color: var(--green-dark);
+        }
+
+        .btn-reserve:hover {
+            background: var(--green-mid);
+            color: var(--green-text);
+        }
+
+        .btn-edit {
+            background: #4a6fa5;
+            color: white;
+            border-color: #3a5a8a;
+        }
+
+        .btn-edit:hover {
+            background: #3a5a8a;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #a54444;
+            color: white;
+            border-color: #8a3a3a;
+        }
+
+        .btn-delete:hover {
+            background: #8a3a3a;
+            color: white;
+        }
+
+        .btn-create {
+            background: var(--green-accent);
+            color: var(--green-dark);
+            padding: 8px 18px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 13px;
+            color: #888;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #4caf73;
+        }
+
+        .admin-badge {
+            background: var(--green-mid);
+            color: var(--green-text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .seats-info {
+            font-weight: 500;
+            color: var(--green-mid);
+        }
+
+        .user-badge {
+            background: #4a6fa5;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .delete-form {
+            display: inline-block;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="page-inner">
+
+        <div class="card">
+            <div class="title">
+                <span>🎉 Upcoming Events</span>
+                {% if is_granted('ROLE_ADMIN') %}
+                    <span class="admin-badge">👑 Administrator</span>
+                {% else %}
+                    <span class="user-badge">👤 User</span>
+                {% endif %}
+            </div>
+            
+            {% if is_granted('ROLE_ADMIN') %}
+                <a class="btn-sm btn-create" href="{{ path('app_event_crud_new') }}" style="margin-bottom: 1.5rem; display: inline-block;">
+                    + Create New Event
+                </a>
+            {% endif %}
+
+            {% if events is defined and events|length > 0 %}
+                <div class="events-grid">
+                    {% for event in events %}
+                        <div class="event-card">
+                            <div class="event-title">{{ event.title }}</div>
+                            <div class="event-info">
+                                📅 {{ event.date|date('Y-m-d H:i') }}
+                            </div>
+                            <div class="event-info">
+                                📍 {{ event.location }}
+                            </div>
+                            <div class="event-info seats-info">
+                                🪑 Available: {{ event.seats }} seats
+                            </div>
+                            {% if event.description %}
+                                <div class="event-description">
+                                    {{ event.description|slice(0, 80) }}{% if event.description|length > 80 %}...{% endif %}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="event-actions">
+                                <a class="btn-sm" href="{{ path('app_event_crud_show', {'id': event.id}) }}">
+                                    View Details
+                                </a>
+                                
+                                {# Reservation button - only for non-admin users (ROLE_USER) #}
+                                {% if is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
+                                    <a class="btn-sm btn-reserve" href="{{ path('app_reservation_new', {'id': event.id}) }}">
+                                        Reserve Seat
+                                    </a>
+                                {% endif %}
+                                
+                                {# Admin actions - only for ROLE_ADMIN #}
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class="btn-sm btn-edit" href="{{ path('app_event_crud_edit', {'id': event.id}) }}">
+                                        Edit
+                                    </a>
+                                    <form method="post" action="{{ path('app_event_crud_delete', {'id': event.id}) }}" 
+                                          onsubmit="return confirm('Are you sure you want to delete this event? This will also delete all associated reservations.');" 
+                                          class="delete-form">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                                        <button type="submit" class="btn-sm btn-delete">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    No events available at the moment.
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <br><br>
+                        <a class="btn-sm btn-create" href="{{ path('app_event_crud_new') }}">
+                            Create the first event
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+           {# Role-based back link #}
+            <a class="back-link" href="
+                {% if is_granted('ROLE_ADMIN') %}
+                    {{ path('app_admin_dashboard') }}
+                {% else %}
+                    {{ path('app_user_dashboard') }}
+                {% endif %}
+            ">
+                ← Back to {{ is_granted('ROLE_ADMIN') ? 'Admin Dashboard' : 'My Dashboard' }}
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

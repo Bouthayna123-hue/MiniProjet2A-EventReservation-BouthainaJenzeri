@@ -1,0 +1,239 @@
+{# templates/reservation/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservations{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark:   #0f1f15;
+            --green-mid:    #1a3122;
+            --green-accent: #4caf73;
+            --green-border: #2d5240;
+            --green-muted:  #5a8a6a;
+            --green-text:   #a8dbb8;
+        }
+
+        .page-wrap {
+            min-height: 100vh;
+            background: #f5f4f0;
+            padding: 2rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .page-card {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        }
+
+        /* ── Header ── */
+        .card-header {
+            background: var(--green-dark);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-header-title {
+            font-family: 'Lora', serif;
+            font-size: 20px;
+            color: #e0f0e5;
+            letter-spacing: -0.3px;
+        }
+        .card-header-bar {
+            width: 20px; height: 2px;
+            background: var(--green-accent);
+            margin-top: 5px;
+        }
+        .btn-new {
+            background: var(--green-mid);
+            color: var(--green-text);
+            border: 1px solid var(--green-border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background .15s, color .15s;
+        }
+        .btn-new:hover {
+            background: var(--green-accent);
+            color: var(--green-dark);
+            border-color: var(--green-accent);
+        }
+
+        /* ── Search bar ── */
+        .card-body { padding: 1.5rem 2rem; }
+        .search-input {
+            width: 100%;
+            border: 1px solid #e0e0dc;
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            background: #fafaf8;
+            color: #111;
+            outline: none;
+            margin-bottom: 1.25rem;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .search-input:focus {
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(76,175,115,.12);
+        }
+
+        /* ── Table ── */
+        .res-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .res-table thead tr {
+            border-bottom: 1px solid #e8e8e4;
+        }
+        .res-table th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #999;
+        }
+        .res-table td {
+            padding: 11px 12px;
+            color: #222;
+            border-bottom: 1px solid #f0f0ec;
+            vertical-align: middle;
+        }
+        .res-table tbody tr:last-child td { border-bottom: none; }
+        .res-table tbody tr:hover { background: #fafaf8; }
+        .res-table .id-cell { color: #bbb; font-size: 12px; }
+
+        /* ── Event badge ── */
+        .event-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            background: #e1f5ee;
+            color: #0f6e56;
+        }
+
+        /* ── Action links ── */
+        .action-link {
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .action-link.show { color: var(--green-accent); }
+        .action-link.edit { color: #888; }
+        .action-link.delete { color: #c0392b; }
+        .action-link:hover { opacity: 0.75; }
+
+        /* ── Empty state ── */
+        .empty-row td {
+            text-align: center;
+            padding: 3rem;
+            color: #bbb;
+            font-size: 13px;
+        }
+
+        /* ── Footer ── */
+        .card-footer {
+            padding: .875rem 2rem;
+            border-top: 1px solid #f0f0ec;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="page-card">
+
+        <div class="card-header">
+            <div>
+                <div class="card-header-title">Reservations</div>
+                <div class="card-header-bar"></div>
+            </div>
+            <a href="{{ path('app_event_crud_index') }}" class="btn-new">+ New reservation</a>
+        </div>
+
+        <div class="card-body">
+            <input type="text" class="search-input" placeholder="Search by name, email or event…"
+                   oninput="filterTable(this.value)" />
+
+            <table class="res-table" id="res-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Event</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        <td class="id-cell">{{ reservation.id }}</td>
+                        <td><span class="event-badge">{{ reservation.event.title }}</span></td>
+                        <td>{{ reservation.name }}</td>
+                        <td>{{ reservation.email }}</td>
+                        <td>{{ reservation.phone }}</td>
+                        <td>{{ reservation.createdAt ? reservation.createdAt|date('Y-m-d H:i') : '—' }}</td>
+                       <td>
+    <a class="action-link show" href="{{ path('app_reservation_show', {'id': reservation.id}) }}">show</a>
+    <a class="action-link edit" href="{{ path('app_reservation_edit', {'id': reservation.id}) }}">edit</a>
+    <form method="post"
+          action="{{ path('app_reservation_delete', {'id': reservation.id}) }}"
+          style="display:inline"
+          onsubmit="return confirm('Delete this reservation?')">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.id) }}">
+        <button type="submit" class="action-link delete"
+                style="background:none;border:none;padding:0;cursor:pointer;">delete</button>
+    </form>
+</td>
+                    </tr>
+                {% else %}
+                    <tr class="empty-row">
+                        <td colspan="7">No reservations found.</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+            <span>{{ reservations|length }} reservation{{ reservations|length != 1 ? 's' : '' }}</span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function filterTable(q) {
+    q = q.toLowerCase();
+    document.querySelectorAll('#res-table tbody tr:not(.empty-row)').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+}
+</script>
+{% endblock %}

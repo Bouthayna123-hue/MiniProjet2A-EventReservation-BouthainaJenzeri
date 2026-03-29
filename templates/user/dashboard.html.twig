@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+{% block title %}My Dashboard{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --gd:#0f1f15; --gm:#1a3122; --ga:#4caf73; --gb:#2d5240; --gt:#a8dbb8; }
+        .page-wrap { min-height:100vh; background:#f5f4f0; padding:2rem; font-family:'DM Sans',sans-serif; }
+        .page-inner { max-width:900px; margin:0 auto; }
+
+        /* ── Top bar ── */
+        .ud-top { background:var(--gd); border-radius:14px; padding:1.25rem 1.75rem; display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:1rem; }
+        .ud-top-left { display:flex; align-items:center; gap:14px; }
+        .ud-avatar { width:44px; height:44px; border-radius:50%; background:var(--gm); border:1.5px solid var(--gb); display:flex; align-items:center; justify-content:center; font-family:'Lora',serif; font-size:16px; color:var(--gt); }
+        .ud-name { font-family:'Lora',serif; font-size:17px; color:#e0f0e5; }
+        .ud-email { font-size:12px; color:#5a8a6a; margin-top:2px; }
+        .ud-nav { display:flex; gap:8px; flex-wrap:wrap; }
+        .ud-nav-btn { background:var(--gm); color:var(--gt); border:0.5px solid var(--gb); border-radius:8px; padding:6px 14px; font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; text-decoration:none; font-weight:500; transition:background .15s,color .15s; }
+        .ud-nav-btn:hover { background:var(--ga); color:var(--gd); border-color:var(--ga); }
+        .ud-nav-btn.danger { color:#f5a0a0; border-color:#3a1a1a; }
+
+        /* ── Flash messages ── */
+        .flash-success { background:#f0f8f3; border:1px solid #b2ddc0; color:#1a6636; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:1rem; }
+        .flash-error   { background:#fff0f0; border:1px solid #f5c6c6; color:#a33; border-radius:8px; padding:10px 14px; font-size:13px; margin-bottom:1rem; }
+
+        /* ── Stats ── */
+        .ud-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.25rem; }
+        .ud-stat { background:#fff; border-radius:12px; padding:1rem 1.25rem; border:1px solid #ebebeb; }
+        .ud-stat-label { font-size:11px; font-weight:500; letter-spacing:.05em; text-transform:uppercase; color:#aaa; margin-bottom:4px; }
+        .ud-stat-val { font-family:'Lora',serif; font-size:28px; color:#111; }
+
+        /* ── Section ── */
+        .section-title { font-family:'Lora',serif; font-size:15px; color:#111; margin-bottom:.875rem; }
+
+        /* ── Reservation cards ── */
+        .res-list { display:flex; flex-direction:column; gap:.75rem; }
+        .res-card { background:#fff; border-radius:12px; border:1px solid #ebebeb; padding:1rem 1.25rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; transition:border-color .15s; }
+        .res-card:hover { border-color:var(--ga); }
+        .res-event-name { font-size:14px; font-weight:500; color:#111; margin-bottom:4px; }
+        .res-meta { font-size:12px; color:#aaa; }
+        .res-date-badge { display:inline-block; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:500; background:#e1f5ee; color:#0f6e56; margin-right:6px; }
+        .res-actions { display:flex; gap:8px; flex-shrink:0; }
+
+        /* ── Buttons ── */
+        .btn-cancel { background:#fff0f0; color:#c0392b; border:0.5px solid #f5c6c6; border-radius:8px; padding:5px 12px; font-size:12px; font-family:'DM Sans',sans-serif; cursor:pointer; font-weight:500; transition:background .15s; }
+        .btn-cancel:hover { background:#fde8e8; }
+        .btn-browse { display:inline-block; margin-top:.875rem; background:var(--gm); color:var(--gt); border:0.5px solid var(--gb); border-radius:8px; padding:7px 16px; font-size:13px; text-decoration:none; font-weight:500; transition:background .15s,color .15s; }
+        .btn-browse:hover { background:var(--ga); color:var(--gd); }
+
+        /* ── Empty state ── */
+        .empty-state { text-align:center; padding:2.5rem; color:#aaa; font-size:13px; background:#fff; border-radius:12px; border:1px solid #ebebeb; }
+
+        @media(max-width:600px) {
+            .ud-stats { grid-template-columns:1fr 1fr; }
+            .res-card { flex-direction:column; align-items:flex-start; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-wrap">
+    <div class="page-inner">
+
+        {% for msg in app.flashes('success') %}
+            <div class="flash-success">{{ msg }}</div>
+        {% endfor %}
+        {% for msg in app.flashes('error') %}
+            <div class="flash-error">{{ msg }}</div>
+        {% endfor %}
+
+        {# ── Top bar ── #}
+        <div class="ud-top">
+            <div class="ud-top-left">
+                <div class="ud-avatar">
+                    {{ app.user.userIdentifier|slice(0,1)|upper }}
+                </div>
+                <div>
+                    <div class="ud-name">My dashboard</div>
+                    <div class="ud-email">{{ app.user.userIdentifier }}</div>
+                </div>
+            </div>
+            <div class="ud-nav">
+                <a class="ud-nav-btn" href="{{ path('app_event_crud_index') }}">Browse events</a>
+                <a class="ud-nav-btn" href="{{ path('app_user_account') }}">Account</a>
+                <a class="ud-nav-btn danger" href="{{ path('app_logout') }}">Sign out</a>
+            </div>
+        </div>
+
+        {# ── Stats ── #}
+        <div class="ud-stats">
+            <div class="ud-stat">
+                <div class="ud-stat-label">My reservations</div>
+                <div class="ud-stat-val">{{ reservations|length }}</div>
+            </div>
+            <div class="ud-stat">
+                <div class="ud-stat-label">Upcoming</div>
+                <div class="ud-stat-val">
+                    {{ reservations|filter(r => r.event.date > date())|length }}
+                </div>
+            </div>
+            <div class="ud-stat">
+                <div class="ud-stat-label">Account</div>
+                <div style="font-size:13px;color:#111;margin-top:6px">
+                    <a href="{{ path('app_user_account') }}" style="color:var(--ga);text-decoration:none;font-weight:500">Edit profile →</a>
+                </div>
+            </div>
+        </div>
+
+        {# ── Reservations ── #}
+        <p class="section-title">My reservations</p>
+
+        {% if reservations is empty %}
+            <div class="empty-state">
+                You have no reservations yet.
+                <br>
+                <a class="btn-browse" href="{{ path('app_event_crud_index') }}">Browse events →</a>
+            </div>
+        {% else %}
+            <div class="res-list">
+            {% for r in reservations %}
+                <div class="res-card">
+                    <div>
+                        <div class="res-event-name">{{ r.event.title }}</div>
+                        <div class="res-meta">
+                            <span class="res-date-badge">
+                                {{ r.event.date ? r.event.date|date('d M Y') : 'TBA' }}
+                            </span>
+                            {% if r.event.location %}{{ r.event.location }} &nbsp;·&nbsp; {% endif %}
+                            Reserved {{ r.createdAt ? r.createdAt|date('d M Y') : '' }}
+                        </div>
+                    </div>
+                    <div class="res-actions">
+                        <form method="post"
+                              action="{{ path('app_user_reservation_cancel', {'id': r.id}) }}"
+                              onsubmit="return confirm('Cancel this reservation?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ r.id) }}">
+                            <button type="submit" class="btn-cancel">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

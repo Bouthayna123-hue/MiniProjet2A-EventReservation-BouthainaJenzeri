@@ -1,0 +1,273 @@
+{# templates/security/login.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign in{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-dark:   #0f1f15;
+            --green-mid:    #1a3122;
+            --green-accent: #4caf73;
+            --green-border: #2d5240;
+            --green-muted:  #5a8a6a;
+            --green-text:   #a8dbb8;
+        }
+
+        .login-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f4f0;
+            padding: 2rem;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .login-card {
+            display: flex;
+            width: 100%;
+            max-width: 680px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+        }
+
+        /* ── Side panel ── */
+        .login-side {
+            width: 240px;
+            flex-shrink: 0;
+            background: var(--green-dark);
+            padding: 2.5rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .login-logo {
+            font-family: 'Lora', serif;
+            font-size: 22px;
+            color: #e0f0e5;
+            letter-spacing: -0.5px;
+        }
+        .login-logo-bar {
+            width: 24px; height: 2px;
+            background: var(--green-accent);
+            margin-top: 8px;
+        }
+        .login-tagline {
+            font-size: 12px;
+            color: var(--green-muted);
+            line-height: 1.6;
+        }
+        .login-dots { display: flex; gap: 6px; }
+        .login-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #2a4a32;
+        }
+        .login-dot.active { background: var(--green-accent); }
+
+        /* ── Form panel ── */
+        .login-main {
+            flex: 1;
+            background: #fff;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-heading {
+            font-family: 'Lora', serif;
+            font-size: 24px;
+            font-weight: 500;
+            color: #111;
+            margin: 0 0 4px;
+        }
+        .login-sub {
+            font-size: 13px;
+            color: #888;
+            margin: 0 0 1.75rem;
+        }
+
+        /* ── Alerts ── */
+        .alert-danger {
+            background: #fff0f0;
+            border: 1px solid #f5c6c6;
+            color: #a33;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 1.25rem;
+        }
+        .alert-info {
+            background: #f0f8f3;
+            border: 1px solid #b2ddc0;
+            color: #1a6636;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 1.25rem;
+        }
+        .alert-info a { color: #1a6636; font-weight: 500; }
+
+        /* ── Fields ── */
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 6px;
+        }
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #e0e0dc;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            background: #fafaf8;
+            color: #111;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .form-group input:focus {
+            border-color: var(--green-accent);
+            box-shadow: 0 0 0 3px rgba(76,175,115,.12);
+        }
+
+        /* ── Remember me + forgot ── */
+        .login-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 13px;
+            color: #666;
+        }
+        .login-row input[type="checkbox"] {
+            accent-color: var(--green-accent);
+            width: 14px; height: 14px;
+            cursor: pointer;
+        }
+        .login-forgot {
+            margin-left: auto;
+            font-size: 12.5px;
+            color: var(--green-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* ── Submit ── */
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background: var(--green-mid);
+            color: var(--green-text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid var(--green-border);
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: .02em;
+            transition: background .15s, color .15s, border-color .15s;
+        }
+        .btn-login:hover {
+            background: var(--green-accent);
+            color: var(--green-dark);
+            border-color: var(--green-accent);
+        }
+
+        .login-register {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 12.5px;
+            color: #999;
+        }
+        .login-register a {
+            color: var(--green-accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        @media (max-width: 560px) {
+            .login-side { display: none; }
+            .login-card { max-width: 400px; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="login-wrap">
+    <div class="login-card">
+
+        <div class="login-side">
+            <div>
+                <div class="login-logo">EventReserve</div>
+                <div class="login-logo-bar"></div>
+            </div>
+            <p class="login-tagline">Welcome back. Sign in to manage your events and reservations.</p>
+            <div class="login-dots">
+                <div class="login-dot active"></div>
+                <div class="login-dot"></div>
+                <div class="login-dot"></div>
+            </div>
+        </div>
+
+        <div class="login-main">
+            <h1 class="login-heading">Welcome back</h1>
+            <p class="login-sub">Sign in to your account to continue.</p>
+
+            {% if error %}
+                <div class="alert-danger">
+                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                </div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="alert-info">
+                    Logged in as {{ app.user.userIdentifier }} —
+                    <a href="{{ logout_path() }}">Sign out</a>
+                </div>
+            {% endif %}
+
+            <form method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="form-group">
+                    <label for="inputEmail">Email address</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                           placeholder="you@example.com" autocomplete="email" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputPassword">Password</label>
+                    <input type="password" name="password" id="inputPassword"
+                           placeholder="Your password" autocomplete="current-password" required>
+                </div>
+
+                <div class="login-row">
+                    <input type="checkbox" name="_remember_me" id="rememberMe">
+                    <label for="rememberMe">Remember me</label>
+                    <a href="#" class="login-forgot">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-login">Sign in →</button>
+            </form>
+
+            <p class="login-register">
+                Don't have an account? <a href="{{ path('app_register') }}">Create one</a>
+            </p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
