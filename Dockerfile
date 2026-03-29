@@ -23,7 +23,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
